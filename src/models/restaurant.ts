@@ -1,11 +1,12 @@
-class FoodClass {
+class RestaurantClass {
     id: number
     image: string
     title: string
     nota: number
     description: string
-    infos: string[]
+    infos: string
     about: string
+    star?: string
 
     constructor(
         id: number,
@@ -13,8 +14,9 @@ class FoodClass {
         title: string,
         nota: number,
         description: string,
-        infos: string[],
-        about: string
+        infos: string,
+        about: string,
+        star?: string
     ) {
         this.id = id
         this.image = image
@@ -22,8 +24,9 @@ class FoodClass {
         this.nota = nota
         this.description = description
         this.infos = infos
+        this.star = star
         this.about = about
     }
 }
 
-export default FoodClass
+export default RestaurantClass
