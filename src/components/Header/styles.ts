@@ -18,15 +18,8 @@ export const HeaderBar = styled.header<Props>`
 
     .container-restaurant-page {
         @media (max-width: 767px) {
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 16px;
-    
-            .restaurant-page-logo {
-                position: absolute;
-                top: 0;
-                left: 0;
-            }
+            justify-content: space-around;
+            align-items: center;
         }
     }
 `
@@ -58,11 +51,16 @@ export const LinkToHome = styled(Link)`
     text-decoration: none;
     font-weight: 900;
     font-size: 18px;
+    
+    &:hover {
+        opacity: 0.8;
+    }
 
     @media (max-width: 767px) {
-        position: absolute;
-        top: 16px;
-        right: 16px;
+        padding: 8px;
+        border-radius: 8px;
+        background-color: ${colors.rose};
+        color: ${colors.white};
     }
 `
 
@@ -78,5 +76,13 @@ export const Carrinho = styled.div`
     p {
         font-weight: 900;
         font-size: 18px;
+    }
+    
+    &:hover {
+        opacity: 0.8;
+    }
+
+    @media (max-width: 767px) {
+        display: none;
     }
 `

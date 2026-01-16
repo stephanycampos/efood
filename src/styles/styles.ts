@@ -11,11 +11,16 @@ export const GlobalStyles = createGlobalStyle`
         list-style: none;
     }
 
+    html, body {
+        height: 100%;
+    }
+
     body {
-        background-color: ${colors.pureWhite};
         color: ${colors.rose};
         display: flex;
         flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
     }
 
     .container {
@@ -23,6 +28,16 @@ export const GlobalStyles = createGlobalStyle`
         width: 100%;
         margin: 0 auto;
         position: relative;
+    }
+
+    .content-master {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .content {
+        flex: 1;
     }
 `
 
@@ -33,6 +48,7 @@ export const RestaurantCover = styled.div`
     background-repeat: no-repeat;
     position: relative;
     overflow: hidden;
+    z-index: 1;
 
     &::before {
         content: '';
@@ -52,15 +68,17 @@ export const RestaurantCover = styled.div`
         .tipo {
             font-weight: 100;
             font-size: 32px;
-            color: ${colors.pureWhite};
+            color: rgba(255, 255, 255, 0.6);
             padding-top: 25px;
             text-transform: capitalize;
+            position: absolute;
         }
 
         .restaurant-name {
             color: ${colors.pureWhite};
             position: absolute;
             bottom: 32px;
+            font-size: 32px;
 
             @media (max-width: 767px) {
                 left: 30px;
