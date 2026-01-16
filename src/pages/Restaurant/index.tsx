@@ -1,7 +1,10 @@
 import { useParams } from "react-router-dom"
-import RestaurantMenuList from "../../components/RestaurantMenuList"
-import { RestaurantCover } from "../../styles/styles"
+
 import { useGetRestaurantMenuQuery } from "../../services/api"
+
+import RestaurantMenuList from "../../components/RestaurantMenuList"
+
+import { RestaurantCover } from "../../styles/styles"
 
 const Restaurant = () => {
     const {id} = useParams<{ id: string}>()
@@ -27,7 +30,11 @@ const Restaurant = () => {
         )
     }
 
-    return <h4>Carregando restaurante...</h4>
+    return (
+        <div className="container-loading">
+            <h4>Carregando...</h4>
+        </div>
+    )
 
 }
 

@@ -1,7 +1,10 @@
-import styled from "styled-components";
-import colors from "../../styles/colors";
-import { Button } from "../RestaurantMenuList/styles";
+import styled from "styled-components"
+
+import { Button } from "../RestaurantMenuList/styles"
+
 import discard from '../../assets/images/discard.png'
+
+import colors from "../../styles/colors"
 
 
 export const Overlay = styled.div`
@@ -25,6 +28,10 @@ export const Overlay = styled.div`
             padding: 0 10px;
             line-height: 32px;
         }
+    }
+
+    @media (min-width: 768px) and (max-width: 1023px) {
+        text-align: center;
     }
 `
 export const Container = styled.div`
@@ -55,6 +62,10 @@ export const Container = styled.div`
             display: none;
         }
     }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        grid-template-columns: 1fr 1fr;
+    }
 `
 
 export const ButtonClose = styled.div`
@@ -78,7 +89,7 @@ export const ButtonClose = styled.div`
     }
 
     b {
-        background-color: rgba(185, 63, 63, 1);
+        background-color: ${colors.strongRose};
         padding: 8px 12px;
         border-radius: 0 8px 8px 0;
         font-size: 18px;
@@ -106,7 +117,7 @@ export const InputGroup = styled.div`
         max-width: 100%;
         width: 100%;
         box-sizing: border-box;
-        border: 1px solid transparent;
+        border: 2px solid transparent;
         font-size: 16px;
         padding: 0 8px;
         background-color: ${colors.white};
@@ -114,7 +125,19 @@ export const InputGroup = styled.div`
     
         &:focus {
             outline: none;
-            border-color: ${colors.green};
+            border-color: ${colors.blue};
+        }
+
+        &.error {
+            border-color: red;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+            background-color: ${colors.lightRed};
+
+            &::placeholder {
+                text-align: right;
+                color: red;
+                font-weight: bold;
+            }
         }
     }
 `
@@ -236,16 +259,49 @@ export const Aside = styled.aside`
             height: 70vh;
         }
 
+        .total p {
+            color: ${colors.white};
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: 500;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        .card-group {
+            max-width: 100%;
+            width: 100%;
+            grid-template-columns: 1fr 60px;
+            gap: 16px;
+        }
+
+        .home-group {
+            gap: 16px;
+
+            div {
+                max-width: 100%;
+            }
+        }
+
         .total {
-            
             p {
-                color: ${colors.white};
                 width: 100%;
                 display: flex;
                 justify-content: space-between;
                 font-size: 18px;
                 font-weight: 500;
             }
+            
+            span {
+                font-size: 1em;
+            }
+        }
+
+        ${Button} {
+            padding: 8px 0;
+            font-size: 1em;
         }
     }
 `
@@ -253,6 +309,7 @@ export const Aside = styled.aside`
 export const Content = styled.div`
     display: flex;
     flex-direction: column;
+    gap: 8px;
 `
 
 export const Prices = styled.p`
@@ -262,7 +319,6 @@ export const Prices = styled.p`
     font-weight: bold;
     font-size: 14px;
     color: ${colors.white};
-    margin: 40px 0 16px 0;
 
     span {
         display: block;
@@ -275,7 +331,16 @@ export const Prices = styled.p`
         margin: 10px 0;
 
         span {
-            font-size: 16px;
+            font-size: 1em;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        font-size: 18px;
+        font-weight: normal;
+
+        span {
+            font-size: 1em;
         }
     }
 `
@@ -343,6 +408,10 @@ export const Item = styled.li`
             height: 24px;
         }
     }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        padding: 0;
+    }
 `
 
 export const FinishContent = styled.div`
@@ -356,5 +425,25 @@ export const FinishContent = styled.div`
         font-size: 14px;
         line-height: 22px;
         text-align: justify;
+    }
+
+    @media (max-width: 767px) {
+        h2 {
+            font-size: 18px;
+        }
+
+        p {
+            font-size: 1em;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        h2 {
+            font-size: 18px;
+        }
+
+        p {
+            font-size: 1em;
+        }
     }
 `

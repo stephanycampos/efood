@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+
 import colors from '../../styles/colors'
 
 export const Container = styled.section`
@@ -21,6 +22,13 @@ export const List = styled.ul`
     @media (max-width: 767px) {
         grid-template-columns: 1fr;
         gap: 50px;
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        grid-template-columns: 1fr 1fr;
+        padding: 0 16px;
+        column-gap: 30px;
+        row-gap: 80px;
     }
 `
 export const Modal = styled.div`
@@ -91,7 +99,8 @@ export const ModalContainer = styled.div`
     }
 
     @media (max-width: 767px) {
-        height: 100dvh;
+        max-height: 100dvh;
+        height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -99,10 +108,12 @@ export const ModalContainer = styled.div`
         padding: 16px;
         position: relative;
         z-index: 2;
+        overflow-y: auto;
 
         .picture{
             padding-top: 30px;
             width: 100%;
+            max-height: 100%;
             height: 100%;
             object-fit: cover;
         }
@@ -120,7 +131,7 @@ export const ModalContainer = styled.div`
 
             span {
                 display: block;
-                background-color: rgba(230, 10, 20, 0.2);
+                background-color: ${colors.rose};
                 padding: 6px;
                 height: 30px;
                 border-radius: 8px 0 0 8px;
@@ -128,7 +139,7 @@ export const ModalContainer = styled.div`
             }
 
             p {
-                background-color: rgba(230, 10, 20, 0.8);
+                background-color: ${colors.strongRose};
                 width: 30px;
                 height: 100%;
                 padding: 6px;
@@ -143,6 +154,16 @@ export const ModalContainer = styled.div`
 
         button {
             width: 100%;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        grid-template-columns: 1fr 1fr;
+        padding: 16px;
+
+        .picture {
+            width: 100%;
+            height: 100%;
         }
     }
 `
@@ -167,6 +188,18 @@ export const Button = styled.button`
     @media (max-width: 767px) {
         padding: 16px 0;
         font-size: 16px;
+
+        &:hover {
+            border-color: transparent;
+            background-color: ${colors.white};
+            color: ${colors.rose};
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        padding: 8px 0;
+        font-size: 16px;
+        width: 100%;
 
         &:hover {
             border-color: transparent;

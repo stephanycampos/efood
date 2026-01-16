@@ -1,13 +1,15 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { useFormik } from 'formik' // biblioteca para facilitar criação de formulários
+import { useFormik } from 'formik' // biblioteca para criação de formulários
 import * as Yup from 'yup' // biblioteca para validação de formulários
+import { IMaskInput } from 'react-imask'
+
+import { backToCart, close, goToDelivery, goToFinish, goToPayment, remove } from '../../store/reducers/cart'
+import { RootReducer } from '../../store'
+import { Button } from '../RestaurantMenuList/styles'
+import { usePurchaseMutation } from '../../services/api'
+import { parseToBrl } from '../../utils'
 
 import * as S from './styles'
-import { RootReducer } from '../../store'
-import { backToCart, close, goToDelivery, goToFinish, goToPayment, remove } from '../../store/reducers/cart'
-import { Button } from '../RestaurantMenuList/styles'
-import { formataPreco } from '../RestaurantMenuList'
-import { usePurchaseMutation } from '../../services/api'
 
 const validationSchemaDelivery = Yup.object({
     name: Yup.string()
@@ -20,8 +22,7 @@ const validationSchemaDelivery = Yup.object({
         .min(4, 'O campo precisa ter pelo menos 4 caracteres')
         .required('O campo é obrigatório'),
     cep: Yup.string()
-        .min(8, 'O campo deve ter no mínimo 8 caracteres')
-        .max(9, 'O campo deve ter no máximo 9 caracteres')
+        .length(9, 'O campo deve ter 9 dígitos')
         .required('O campo é obrigatório'),
     numberHome: Yup.string()
         .min(1, 'O campo precisa ter pelo menos 1 caractere')
@@ -36,8 +37,7 @@ const validationSchemaPayment = Yup.object({
         .min(5, 'O campo precisa ter pelo menos 5 caracteres')
         .required('O campo é obrigatório'),
     cardNumber: Yup.string()
-        .min(14, 'O número do cartão precisa ter no mínimo 14 dígitos')
-        .max(19, 'O número do cartão pode ter no máximo 19 dígitos')
+        .length(19, 'O campo deve ter 16 dígitos')
         .required('O campo é obrigatório'),
     cvv: Yup.string()
         .min(3, 'O CVV deve ter no mínimo 3 dígitos')
@@ -54,7 +54,7 @@ const validationSchemaPayment = Yup.object({
 export const AsideGlobal = () => {
     const { isOpen, items, currentStep } = useSelector((state: RootReducer) => state.cart)
 
-    const [purchase, { isLoading, isError, data }] = usePurchaseMutation()
+    const [purchase, { data }] = usePurchaseMutation()
 
     const form = useFormik({
         initialValues: {
@@ -115,15 +115,12 @@ export const AsideGlobal = () => {
         }
     })
 
-    const getErrorMessage = (fieldName: string, message?: string) => {
+    const checkInputHasError = (fieldName: string) => {
         const isTouched = fieldName in form.touched
         const isInvalid = fieldName in form.errors
+        const hasError = isTouched && isInvalid
 
-        if (isTouched && isInvalid) {
-            return message
-        }
-
-        return ''
+        return hasError
     }
 
 
@@ -166,9 +163,9 @@ export const AsideGlobal = () => {
                                 <img src={item.foto} alt={item.nome} />
                                 <div>
                                     <h3>{item.nome}</h3>
-                                    <span>{formataPreco(item.preco)}</span>
+                                    <span>{parseToBrl(item.preco)}</span>
                                 </div>
-                                <button onClick={() => removeItem(item.id)} type="button" title="Remover" />
+                                <button onClick={() => removeItem(item.id)} type="button" title={`Remover ${item.nome}`} />
                             </S.Item>
                         ))}
                     </ul>
@@ -177,12 +174,12 @@ export const AsideGlobal = () => {
                             <p>Total de itens selecionados: <span>{items.length}</span></p>
                         </div>
                         <S.Prices>
-                            Valor total: <span>{formataPreco(totalPrices())}</span>
+                            Valor total: <span>{parseToBrl(totalPrices())}</span>
                         </S.Prices>
                         {items.length === 0 ? (
                             <div className='blocked'>
                                 <span />
-                                <Button title="Clique aqui para continuar com a compra" type="button">
+                                <Button title="Adicione itens no carrinho para continuar" type="button">
                                     Adicione itens no carrinho para continuar
                                 </Button>
                             </div>
@@ -208,8 +205,9 @@ export const AsideGlobal = () => {
                                 value={form.values.name}
                                 onChange={form.handleChange}
                                 onBlur={form.handleBlur}
+                                placeholder={checkInputHasError('name') ? '!' : ''}
+                                className={checkInputHasError('name') ? 'error' : ''}
                             />
-                            <small>{getErrorMessage('name', form.errors.name)}</small>
                         </S.InputGroup>
                         <S.InputGroup>
                             <label htmlFor="address">Endereço</label>
@@ -220,8 +218,9 @@ export const AsideGlobal = () => {
                                 value={form.values.address}
                                 onChange={form.handleChange}
                                 onBlur={form.handleBlur}
+                                placeholder={checkInputHasError('adress') ? '!' : ''}
+                                className={checkInputHasError('address') ? 'error' : ''}
                             />
-                            <small>{getErrorMessage('address', form.errors.address)}</small>
                         </S.InputGroup>
                         <S.InputGroup>
                             <label htmlFor="city">Cidade</label>
@@ -232,21 +231,24 @@ export const AsideGlobal = () => {
                                 value={form.values.city}
                                 onChange={form.handleChange}
                                 onBlur={form.handleBlur}
+                                className={checkInputHasError('city') ? 'error' : ''}
                             />
-                            <small>{getErrorMessage('city', form.errors.city)}</small>
                         </S.InputGroup>
                         <div className='home-group'>
                             <S.InputGroup>
                                 <label htmlFor="cep">CEP</label>
-                                <input
+                                <IMaskInput
+                                    mask="00000-000"
                                     id='cep'
                                     type="text"
                                     name='cep'
                                     value={form.values.cep}
                                     onChange={form.handleChange}
                                     onBlur={form.handleBlur}
+                                    placeholder={checkInputHasError('cep') ? '!' : ''}
+                                    className={checkInputHasError('cep') ? 'error' : ''}
+                                    inputMode='numeric'
                                 />
-                                <small>{getErrorMessage('cep', form.errors.cep)}</small>
                             </S.InputGroup>
                             <S.InputGroup>
                                 <label htmlFor="numberHome">Número</label>
@@ -257,8 +259,9 @@ export const AsideGlobal = () => {
                                     value={form.values.numberHome}
                                     onChange={form.handleChange}
                                     onBlur={form.handleBlur}
+                                    placeholder={checkInputHasError('numberHome') ? '!' : ''}
+                                    className={checkInputHasError('numberHome') ? 'error' : ''}
                                 />
-                                <small>{getErrorMessage('numberHome', form.errors.numberHome)}</small>
                             </S.InputGroup>
                         </div>
                         <S.InputGroup>
@@ -270,13 +273,13 @@ export const AsideGlobal = () => {
                                 value={form.values.complement}
                                 onChange={form.handleChange}
                                 onBlur={form.handleBlur}
+                                className={checkInputHasError('complement') ? 'error' : ''}
                             />
-                            <small>{getErrorMessage('complement', form.errors.complement)}</small>
                         </S.InputGroup>
                     </div>
                     <div className='button-group'>
-                        <Button type='submit'>Continuar com o pagamento</Button>
-                        <Button type='button' onClick={handleCart}>Voltar para o carrinho</Button>
+                        <Button type='submit' title="Clique aqui para continuar com o pagamento">Continuar com o pagamento</Button>
+                        <Button type='button' onClick={handleCart} title="Clique aqui para voltar ao carrinho">Voltar para o carrinho</Button>
                     </div>
                 </form>
             )
@@ -284,7 +287,7 @@ export const AsideGlobal = () => {
             return (
                 <form onSubmit={form.handleSubmit}>
                     <div>
-                        <h2>Pagamento - Valor a pagar {formataPreco(totalPrices())}</h2>
+                        <h2>Pagamento - Valor a pagar {parseToBrl(totalPrices())}</h2>
                         <S.InputGroup>
                             <label htmlFor="cardName">Nome no cartão</label>
                             <input
@@ -294,73 +297,86 @@ export const AsideGlobal = () => {
                                 value={form.values.cardName}
                                 onChange={form.handleChange}
                                 onBlur={form.handleBlur}
+                                placeholder={checkInputHasError('cardName') ? '!' : ''}
+                                className={checkInputHasError('cardName') ? 'error' : ''}
                             />
-                            <small>{getErrorMessage('cardName', form.errors.cardName)}</small>
                         </S.InputGroup>
                         <div className="card-group">
                             <S.InputGroup>
                                 <label htmlFor="cardNumber">Número do cartão</label>
-                                <input
+                                <IMaskInput
+                                    mask="0000 0000 0000 0000"
                                     id='cardNumber'
                                     type="text"
                                     name='cardNumber'
                                     value={form.values.cardNumber}
                                     onChange={form.handleChange}
                                     onBlur={form.handleBlur}
+                                    placeholder={checkInputHasError('cardNumber') ? '!' : ''}
+                                    className={checkInputHasError('cardNumber') ? 'error' : ''}
+                                    inputMode='numeric'
                                 />
-                                <small>{getErrorMessage('cardNumber', form.errors.cardNumber)}</small>
                             </S.InputGroup>
                             <S.InputGroup>
                                 <label htmlFor="cvv">CVV</label>
-                                <input
+                                <IMaskInput
+                                    mask="0000"
                                     id='cvv'
                                     type="text"
                                     name='cvv'
                                     value={form.values.cvv}
                                     onChange={form.handleChange}
                                     onBlur={form.handleBlur}
+                                    placeholder={checkInputHasError('cvv') ? '!' : ''}
+                                    className={checkInputHasError('cvv') ? 'error' : ''}
+                                    inputMode='numeric'
                                 />
-                                <small>{getErrorMessage('cvv', form.errors.cvv)}</small>
                             </S.InputGroup>
                         </div>
                         <div className='home-group'>
                             <S.InputGroup>
                                 <label htmlFor="expirationMonth">Mês de vencimento</label>
-                                <input
+                                <IMaskInput
+                                    mask="00"
                                     id='expirationMonth'
                                     type="text"
                                     name='expirationMonth'
                                     value={form.values.expirationMonth}
                                     onChange={form.handleChange}
                                     onBlur={form.handleBlur}
+                                    placeholder={checkInputHasError('expirationMonth') ? '!' : ''}
+                                    className={checkInputHasError('expirationMonth') ? 'error' : ''}
+                                    inputMode='numeric'
                                 />
-                                <small>{getErrorMessage('expirationMonth', form.errors.expirationMonth)}</small>
                             </S.InputGroup>
                             <S.InputGroup>
                                 <label htmlFor="expirationYear">Ano de vencimento</label>
-                                <input
+                                <IMaskInput
+                                    mask="0000"
                                     id='expirationYear'
                                     type="text"
                                     name='expirationYear'
                                     value={form.values.expirationYear}
                                     onChange={form.handleChange}
                                     onBlur={form.handleBlur}
+                                    placeholder={checkInputHasError('expirationYear') ? '!' : ''}
+                                    className={checkInputHasError('expirationYear') ? 'error' : ''}
+                                    inputMode='numeric'
                                 />
-                                <small>{getErrorMessage('expirationYear', form.errors.expirationYear)}</small>
                             </S.InputGroup>
                         </div>
                     </div>
                     <div className='button-group'>
-                        <Button type='submit'>Finalizar pagamento</Button>
-                        <Button type='button' onClick={handleContinueDelivery}>Voltar para a edição de endereço</Button>
+                        <Button type='submit' title="Clique aqui para finalizar o pedido">Finalizar pagamento</Button>
+                        <Button type='button' onClick={handleContinueDelivery} title="Clique aqui para voltar para editar o endereço">Voltar para a edição de endereço</Button>
                     </div>
                 </form>
             )
-        } else if (currentStep === 'finish') {
+        } else if (currentStep === 'finish' && data) {
             return (
                 <>
                     <S.FinishContent>
-                        <h2>Pedido realizado - (ORDER_ID)</h2>
+                        <h2>Pedido realizado - {data.orderId}</h2>
                         <div>
                             <p>
                                 Estamos felizes em informar que seu pedido já está em processo de preparação e, em breve, será entregue no endereço fornecido.
@@ -376,7 +392,7 @@ export const AsideGlobal = () => {
                             </p>
                         </div>
                     </S.FinishContent>
-                    <Button onClick={conclude}>Concluir</Button>
+                    <Button onClick={conclude} title="Clique aqui para concluir">Concluir</Button>
                 </>
             )
         }

@@ -1,24 +1,20 @@
 import { useState } from 'react'
-import * as S from './styles'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { MenuProps, MenuRestaurant } from '../../types'
+import { add, backToCart, open } from '../../store/reducers/cart'
+import { RootReducer } from '../../store'
+import { parseToBrl } from '../../utils'
+
 import RestaurantMenu from "../RestaurantMenu"
 
 import closeIcon from '../../assets/images/close.png'
-import { MenuProps, MenuRestaurant } from '../../types'
-import { useDispatch, useSelector } from 'react-redux'
-import { add, open } from '../../store/reducers/cart'
-import { RootReducer } from '../../store'
+
+import * as S from './styles'
 
 export interface ModalState {
     isVisible: boolean
 }
-
-export const formataPreco = (preco = 0) => {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(preco)
-}
-
 
 const RestaurantMenuList = ({ menu }: MenuProps) => {
     const [selectedMenu, setSelectedMenu] = useState<MenuRestaurant | null>(null)
@@ -49,6 +45,7 @@ const RestaurantMenuList = ({ menu }: MenuProps) => {
 
     const openAside = () => {
         dispatch(open())
+        dispatch(backToCart())
         closeModal()
     }
 
@@ -99,9 +96,9 @@ const RestaurantMenuList = ({ menu }: MenuProps) => {
                             </p>
                         </div>
                         {isInCart ? (
-                            <S.Button className='added' onClick={openAside} title='Ver no carrinho'>Produto adicionado ao carrinho</S.Button>
+                            <S.Button className='added' onClick={openAside} title='Clique aqui para ver no carrinho'>Produto adicionado ao carrinho</S.Button>
                         ) : (
-                            <S.Button onClick={addToCart}>Adicionar ao carrinho - {formataPreco(selectedMenu?.preco)}</S.Button>
+                            <S.Button onClick={addToCart} title={`Clique aqui para adicionar ao carrinho`}>Adicionar ao carrinho - {parseToBrl(selectedMenu?.preco)}</S.Button>
                         )}
                     </S.Content>
                 </S.ModalContainer>
