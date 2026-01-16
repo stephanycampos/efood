@@ -1,10 +1,8 @@
-import styled from 'styled-components'
-
-import { RestaurantsProps } from '../../types' 
+import styled from 'styled-components' 
 
 import colors from '../../styles/colors'
 
-export const Container = styled.section<Omit<RestaurantsProps, 'title' | 'restaurants'>>`
+export const Container = styled.section<Omit<RestaurantsProps, 'title' | 'restaurants' | 'isLoading'>>`
     padding: 32px 0;
     background-color: ${colors.pureWhite};
     display: flex;

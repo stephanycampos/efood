@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { MenuProps, MenuRestaurant } from '../../types'
 import { add, backToCart, open } from '../../store/reducers/cart'
 import { RootReducer } from '../../store'
 import { parseToBrl } from '../../utils'
 
 import RestaurantMenu from "../RestaurantMenu"
+import Loader from '../Loader'
 
 import closeIcon from '../../assets/images/close.png'
 
@@ -16,7 +16,7 @@ export interface ModalState {
     isVisible: boolean
 }
 
-const RestaurantMenuList = ({ menu }: MenuProps) => {
+const RestaurantMenuList = ({ menu, isLoading }: MenuProps) => {
     const [selectedMenu, setSelectedMenu] = useState<MenuRestaurant | null>(null)
 
     const [modal, setModal] = useState<ModalState>({
@@ -53,6 +53,10 @@ const RestaurantMenuList = ({ menu }: MenuProps) => {
 
     const isInCart = selectedMenu ? items.some((item) => item.id === selectedMenu.id) : false
 
+    if (isLoading) {
+        return <Loader />
+    }
+
     return (
         <>
             <S.Container className="container">
@@ -78,11 +82,11 @@ const RestaurantMenuList = ({ menu }: MenuProps) => {
                                 <span>Fechar</span>
                                 <p>
                                     <img
-                                    className='close'
-                                    src={closeIcon}
-                                    alt="Fechar pop-up"
-                                    title="Fechar pop-up"
-                                />
+                                        className='close'
+                                        src={closeIcon}
+                                        alt="Fechar pop-up"
+                                        title="Fechar pop-up"
+                                    />
                                 </p>
                             </div>
                             <h3>{selectedMenu?.nome}</h3>
@@ -102,7 +106,7 @@ const RestaurantMenuList = ({ menu }: MenuProps) => {
                         )}
                     </S.Content>
                 </S.ModalContainer>
-                <div className="overlay" onClick={closeModal}></div>
+                <div className="overlay" onClick={closeModal} title='Clique aqui para fechar' />
             </S.Modal>
         </>
     )
